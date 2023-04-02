@@ -1,6 +1,6 @@
 # 42_born2beroot
 
-My *Born2beRoot* project for **42 Nice**, updated on November 28th 2022, at 10:20.
+My *Born2beRoot* project for **42 Nice**, last updated on April 2nd 2023, at 13:09.
 
 ## CentOS VS Debian
 
@@ -45,7 +45,7 @@ To create a group, use ```groupadd <username>```.
 
 ## Passwords
 
-The password policy is enforced through *LibPam-CrackLib*.  
+I enforced my password policy with *LibPam-CrackLib*.  
 To see when a password will expire, use ```chage -l <username>```.  
 Its settings are found in ```/etc/pam.d/common_password```.
 
@@ -58,9 +58,9 @@ At around line 25 is the password policy definition. Here's what I added:
 - ```lcredit=0``` -> see further down.
 - ```ocredit=0``` -> see further down.
 - ```reject_username``` -> rejects the password if it contains the username.
-- ```enforce_for_root``` -> enforces these rules for the root user.
+- ```enforce_for_root``` -> enforces these rules for the root user (except ```difok```).
 
-The **credit** part is tricky. Minimum length is 10 but, by default (default is ```*credit=1```), each character type, when used at least once, gives you 1 credit, which counts as length for ```minlen```. So a 9 characters long password of only lowercases will be counted as having a length of 10. As such, length here is misnamed, as it evaluates strength. As such, I set the credits given for all character types to 0 and enforce the need to have at least 1 digit and 1 uppercase (with the negative values).
+The **credit** part is tricky. Minimum length is 10 but, by default (default is ```*credit=1```), each character type, when used at least once, gives you 1 credit, which counts as length for ```minlen```. So a 9 characters long password of only lowercases will be counted as having a length of 10. As such, length here is misnamed, as it evaluates strength. As such, I set the credits given for all character types to 0 and enforced the need to have at least 1 digit and 1 uppercase (with the negative values).
 
 ## Services and daemons
 
@@ -99,12 +99,12 @@ The ```apt``` command uses functionalities from *apt-cache* and *apt-get*, which
 
 Aptitude is also open source.  
 It has a GUI and a multitude of functionalities (display, colors, package marking, etc.).  
-It also uses functionalities from *apt-cache* and *apt-get*, but also *apt-cache*, which makes this software high-level and more extensive than *apt*.
+It also uses functionalities from *apt-cache* and *apt-get*, but also *apt-mark*, which makes this software high-level and more extensive than *apt*.
 
 ## Ports
 
 Ports *0* through *1023* are usually reserved for common services.  
-For example, port *22* is for **SSH**, *80* for **HTTP**, *443* for **HTTPS**, *68* for **DHCP** or *3306* for **MySQL**.  
+For example, port *22* is for **SSH**, *80* for **HTTP**, *443* for **HTTPS**, *68* for **DHCP**.  
 Ports *1024* through *49151* are user ports.  
 Ports *49152* through *65535* are private or dynamic ports.
 
@@ -119,7 +119,7 @@ UFW (Uncomplicated FireWall) allows complete novices to very simply set up a bas
   - ```ufw status numbered``` gives you a numbered list of all opened ports.
 - ```ufw enable``` activates the service.
 - ```ufw disable``` desactivates the service.
-- ```ufw allow``` opens a port or aset of ports.
+- ```ufw allow``` opens a port or a set of ports.
   - ```ufw allow 42``` opens port *42*.
   - ```ufw allow 69:420/udp``` opens ports *69* through *420* as **UDP** ports.
 - ```ufw delete n``` deletes the *nth* line in the rules list (use ```ufw status numbered``` to get the line numbers).
@@ -134,9 +134,11 @@ A blacklist firewall would be the opposite, it would open all ports except the o
 To use it, place ```sudo``` before any command.  
 To directly become a super user (root), use the command ```su```.
 
-In simpler terms, *sudo* is just like when your computer asks you to execute an action with administrator rights. Even though you own the computer, you're usually logged in as a user, not as root!
+In simpler terms, *sudo* is just like when your computer asks you to execute an action with administrator rights.  
+Even though you own the computer, you're usually logged in as a user, not as root!
 
-To safely configure *sudo*, use ```sudo visudo```. Here's what I edited:
+To safely configure *sudo*, use ```sudo visudo```.  
+Here's what I edited:
 - ```passwd_tries=3```-> only 3 tries to get the password right.
 - ```badpass_message="hihi"``` -> the message "*hihi*" is displayed in case of a wrong password.
 - ```log_input, log_output``` -> log all inputs and outputs.
@@ -164,7 +166,9 @@ It is done by the scheduler.
 It further securises *TCP* connections and is thus often used for remote terminals.
 
 To check on it, use ```service sshd status```.  
-Its configuration file is in ```/etc/ssh/sshd_config```. What I modified is:
+Its configuration file is in ```/etc/ssh/sshd_config```.  
+  
+What I modified is:
 - line 15: ```Port 4242```.
 - line 34: ```PermitRootLogin no```.
 
@@ -191,15 +195,14 @@ To make *cron* wait, use ```sleep 30s``` (This will make *cron* wait for 30 seco
 ### MariaDB
 
 *MariaDB* is a database manager. Its GUI is in **SQL**.  
-I installed it, deleted the demo database, created mine and gave myself all rights to manage it.  
+I installed it, deleted the template database, created mine and gave myself all rights to manage it.  
 To check, use ```mariadb -u <username> -p```, log in, then use ```SHOW DATABASES;```.  
 To exit, use ```EXIT;```.
 
 ### WordPress
 
-*WordPress* is a low entry level, extensive tool for easily creating webpages.  
+*WordPress* is a low entry level, extensive tool made to easily create websites.  
 Its configuration file is in ```/var/www/html/wp-config.php```.  
 For *WordPress* to work, I opened port *80* for **HTTP**.
 
-To see your *WordPress* page, enter your server's IP as an adress in your internet browser.  
-For me, it was ```127.0.0.1```.
+To see your *WordPress* page, enter your server's IP as an adress in your internet browser.
